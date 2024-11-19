@@ -29,8 +29,16 @@ function refreshCPS() {
 }
 
 function handleShopClick ( item ) {
+
+    if(item.price > total_cookie){
+        alert(`You don't have enough cookies` )
+        return
+    }
+
     let index = shop.findIndex(o=> o.id == item.id)
+    total_cookie -= item.price
     shop[index].total += 1
+    shop[index].price = Math.round( shop[index].price * 1.2 )
     localStorage.setItem('saved_shop', JSON.stringify(shop))
     refreshShop()
     refreshCPS(); 
@@ -48,7 +56,6 @@ function refreshCPS() {
 }
 
 function refreshShop(){
-
 
     shop_tag.innerHTML = null
 
@@ -91,7 +98,7 @@ function initialiseGame() {
     if(!saved_shop){
         shop = [
             {id: "granny", title: "Granny", price: 10, cps: 1, image_url:"assets/granny.png", total: 0},
-            {id: "farm", title: "Farm", price: 10, cps: 10, image_url:"assets/farm.png", total: 0},
+            {id: "farm", title: "Farm", price: 100, cps: 10, image_url:"assets/farm.png", total: 0},
         ]
     } else {
         shop = JSON.parse(saved_shop)
@@ -117,7 +124,7 @@ function resetGame(){
 }
 
 function changeCounterTag(value) {
-    cookie_counter_tag.innerText = total_cookie + " cookies"
+    cookie_counter_tag.innerText = Math.round(total_cookie) + " cookies"
 }
 
 function incrementCookies(cookies_to_add) {
@@ -143,6 +150,6 @@ cookie_image.addEventListener('click', ()=> { incrementCookies(1) })
 reset_button.addEventListener('click' ,resetGame)
 
 setInterval(()=>{
-    total_cookie += total_cps / 10
+    incrementCookies(total_cps / 10)
     refreshCookies(total_cookie + total_cps)
 }, 100)
