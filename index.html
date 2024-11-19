@@ -9,13 +9,15 @@
 </head>
 <body>
     <div class="w-screen h-screen flex" >
-        <div class="flex flex-col flex-1 bg-green-500 justify-center items-center">
+        <div class="flex flex-col flex-1 bg-slate-600 justify-center items-center">
             <p class="text-3xl font-bold" id="cookie_counter">0 cookies</p>
-            <p class="text-3xl font-bold" id="cookie_per_second">Y cookies per second</p>
+            <p class="text-3xl font-bold" id="cookie_per_second">0 cookies per second</p>
             <img id="cookie_image" src="assets/cookie.png" class="h-80 mt-14 hover:h-96 cursor-pointer transitionn-all duration-300" alt="Image of a cookie" >
         </div>
-        <div class="flex flex-col flex-1 bg-yellow-500"></div>
-        <div class="flex flex-col flex-1 bg-red-500">
+        <div class="flex flex-col flex-1 bg-slate-600">
+            <button id="reset_button"  class="rounded m-3 p-3 bg-white hover:bg-red-300 hover:font-bold"> 🗑️ Restart the game</button>
+        </div>
+        <div class="flex flex-col flex-1 bg-slate-600">
             <div id="shop-container" class="flex flex-col gap-3 p-3">
             </div>
         </div>

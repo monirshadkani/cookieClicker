@@ -1,43 +1,67 @@
+//conf varibales
+
 
 //Global variables
 
 let total_cookie = 0 
 let cookies_per_second = 0
+let total_cps = 0
 
-let shop = [
-    {id: "granny", title: "Granny", price: 10, cps: 1, image_url:"assets/granny.png", total: 0},
-    {id: "farm", title: "Farm", price: 10, cps: 1, image_url:"assets/farm.png", total: 0},
-
-]
+let shop = []
 
 // DOM elements
 
 const cookie_image = document.getElementById('cookie_image')
 const cookie_counter_tag = document.getElementById('cookie_counter')
 const shop_tag = document.getElementById('shop-container')
+const cookie_per_second_tag = document.getElementById('cookie_per_second')
+const reset_button = document.getElementById('reset_button')
 
 //Functions
+
+function refreshCPS() {
+    let total = 0
+    shop.forEach(item => {
+        total += item.total * item.cps
+    })
+    total_cps = total
+    cookie_per_second_tag.innerText = `${total_cps} cookies par seconde`
+}
 
 function handleShopClick ( item ) {
     let index = shop.findIndex(o=> o.id == item.id)
     shop[index].total += 1
+    localStorage.setItem('saved_shop', JSON.stringify(shop))
     refreshShop()
+    refreshCPS(); 
+}
+
+function refreshCPS() {
+    //can be done with the method reduce, learn this ffs
+    let total = 0
+
+    shop?.forEach(item => {
+        total += item.total * item.cps
+    })
+    total_cps = total
+    cookie_per_second_tag.innerText = `${total_cps} cookies par seconde`
 }
 
 function refreshShop(){
+
+
     shop_tag.innerHTML = null
 
-
-    shop.forEach((item) => {
+    shop?.forEach((item) => {
         let newDomElement = document.createElement('div')
-        newDomElement.classList = ['bg-white rounded p-3 flex justify-between cursor-pointer hover:bg-gray-200 transition-all duration-300']
+        newDomElement.classList = ['bg-white rounded p-3 flex justify-between cursor-pointer hover:bg-red-900 transition-all duration-300']
 
         let leftPart = document.createElement('div')
         leftPart.classList = ['flex items-center gap-3']
 
         let itemImage = document.createElement('img')
         itemImage.src = item.image_url
-        itemImage.classList= ['rounded-full h-10']
+        itemImage.classList= ['rounded-full h-20 w-20']
 
         let itemName = document.createElement('span')
         itemName.innerText = item.title
@@ -61,14 +85,35 @@ function refreshShop(){
 }
 
 function initialiseGame() {
-    const saved = localStorage.getItem('saved_cookies')
-    if(!saved) {
+    const saved_cookies = localStorage.getItem('saved_cookies')
+    const saved_shop = localStorage.getItem('saved_shop')
+
+    if(!saved_shop){
+        shop = [
+            {id: "granny", title: "Granny", price: 10, cps: 1, image_url:"assets/granny.png", total: 0},
+            {id: "farm", title: "Farm", price: 10, cps: 10, image_url:"assets/farm.png", total: 0},
+        ]
+    } else {
+        shop = JSON.parse(saved_shop)
+    }
+
+    if(!saved_cookies) {
         localStorage.setItem('saved_cookies', 0)
         total_cookie = 0
     } else {
-        total_cookie = parseInt(saved)
+        total_cookie = parseInt(saved_cookies)
     }
     refreshShop()
+    refreshCPS()
+}
+
+function resetGame(){
+    localStorage.removeItem('saved_cookies')
+    localStorage.removeItem('saved_shop')
+    total_cookie = 0
+    total_cps = 0
+    changeCounterTag(0)
+    initialiseGame()
 }
 
 function changeCounterTag(value) {
@@ -81,6 +126,13 @@ function incrementCookies(cookies_to_add) {
     localStorage.setItem('saved_cookies', total_cookie)
 
 }
+
+function refreshCookies(value) {
+    cookie_counter_tag.innerText = Math.round(total_cookie) + " cookies"
+}
+
+
+
 // Main
 
 initialiseGame()
@@ -88,3 +140,9 @@ initialiseGame()
 changeCounterTag(total_cookie)
 
 cookie_image.addEventListener('click', ()=> { incrementCookies(1) })
+reset_button.addEventListener('click' ,resetGame)
+
+setInterval(()=>{
+    total_cookie += total_cps / 10
+    refreshCookies(total_cookie + total_cps)
+}, 100)
